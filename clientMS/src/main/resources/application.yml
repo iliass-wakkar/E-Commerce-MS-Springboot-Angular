@@ -1,0 +1,11 @@
+server:
+  # Port de fallback (le port 8080 est utilisé dans le TP 5.1 [cite: 21])
+  port: 8080
+
+spring:
+  application:
+    # Nom du service (doit correspondre au fichier dans le "repo")
+    name: ms-client
+  config:
+    # Adresse de votre Config Server
+    import: "optional:configserver:http://localhost:8888"

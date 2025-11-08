@@ -1,0 +1,22 @@
+# In Config Server's application.yml (running on port 8888)
+
+server:
+  port: 8888
+
+spring:
+  profiles:
+    active: native
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: file:///C:/Users/ilias/Desktop/EMSI/springboot/JEE2 project/MS project/config-repo
+        git:
+          enabled: false 
+          
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/

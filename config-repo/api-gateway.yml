@@ -1,0 +1,20 @@
+server:
+  port: 8080
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: config-service_route
+          uri: lb://CONFIG-SERVER
+          predicates:
+            - Path=/config/** ```

@@ -1,0 +1,13 @@
+spring:
+  main:
+    # 1. Indique à Spring d'utiliser un serveur web Réactif (Netty), 
+    #    ce qui est OBLIGATOIRE pour Spring Cloud Gateway
+    web-application-type: reactive
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          # 2. Active la découverte automatique des routes via Eureka.
+          #    C'est la "magie" : la Gateway va automatiquement créer 
+          #    des routes pour 'MSPRODUCTS', 'CONFIGSERVER', etc.
+          enabled: true

@@ -1,0 +1,23 @@
+server:
+  # Le port RÉEL sur lequel ce service va démarrer
+  port: 8080
+
+# (Optionnel) Spécifie le nom du service tel qu'enregistré dans Eureka,
+# au cas où il serait différent de spring.application.name
+eureka:
+  instance:
+    appname: MS-CLIENT
+
+spring:
+  datasource:
+    # Notez le port 5433
+    url: jdbc:postgresql://localhost:5433/client_db
+    username: postgres
+    password: mysecretpassword
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect

@@ -1,0 +1,25 @@
+
+
+server:
+  # Le port RÉEL sur lequel ce microservice va démarrer
+  port: 3333 # (ou 2222 comme dans le TP 5.1, à vous de choisir)
+
+# --- Configuration de votre base de données ---
+# (Votre pom.xml utilise PostgreSQL, 
+#  voici un exemple de configuration pour ce service)
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/product_db
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: mysecretpassword
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  hibernate: 
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+app:
+  message: "Bonjour controller!"
+  feature-enabled: true

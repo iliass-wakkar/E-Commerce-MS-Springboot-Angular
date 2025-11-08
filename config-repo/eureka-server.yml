@@ -1,0 +1,14 @@
+server:
+  port: 8761 # Port d'écoute du serveur Eureka
+spring:
+  application:
+    name: eureka-server
+  cloud:
+    config:
+      import-check:
+        enabled: false # Optionnel, pour éviter les problèmes de démarrage
+eureka:
+  client:
+    registerWithEureka: false # Ne pas s'enregistrer lui-même
+    fetchRegistry: false # Ne pas récupérer le registre des clients
+  

@@ -1,0 +1,30 @@
+# Configuration globale partagée pour se connecter à EurekaServer
+eureka:
+  client:
+    # URL de base pour tous les clients
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    # Les clients doivent s'enregistrer
+    register-with-eureka: true
+    # Les clients doivent récupérer le registre
+    fetch-registry: true
+
+# Configuration Actuator commune
+management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: "*" # Expose tous les endpoints
+      base-path: /actuator # Chemin de base pour Actuator
+
+# (Optionnel, mais listé dans le TP) Désactiver Resilience4j
+resilience4j:
+  circuitbreaker:
+    enabled: false
+  retry:
+    enabled: false
+  ratelimiter:
+    enabled: false
+  timelimiter:
+    enabled: false

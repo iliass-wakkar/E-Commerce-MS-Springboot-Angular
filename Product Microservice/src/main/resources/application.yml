@@ -1,0 +1,11 @@
+server:
+  # Port de fallback (utilisé si le Config Server est en panne)
+  port: 8081
+
+spring:
+  application:
+    # Le nom que ce service utilise pour demander sa config
+    name: product-service
+  config:
+    # L'adresse de votre Config Server
+    import: "optional:configserver:http://localhost:8888"
