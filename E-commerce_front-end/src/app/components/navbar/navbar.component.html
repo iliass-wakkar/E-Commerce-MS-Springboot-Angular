@@ -1,0 +1,33 @@
+<nav class="bg-white shadow-md sticky top-0 z-50">
+  <div class="container mx-auto max-w-7xl px-4 flex justify-between items-center py-4">
+    <div class="flex items-center">
+      <a routerLink="/" class="text-3xl font-bold text-blue-600">E-Shop</a>
+    </div>
+    <div class="hidden md:flex gap-6">
+      <a routerLink="/" class="text-gray-600 hover:text-blue-600">Home</a>
+      <a routerLink="/products" class="text-gray-600 hover:text-blue-600">Products</a>
+      <a routerLink="/categories" class="text-gray-600 hover:text-blue-600">Categories</a>
+    </div>
+    <div class="flex items-center gap-4">
+      @if (!(isAuthenticated$ | async)) {
+        <a routerLink="/login" class="text-gray-600 font-medium hover:text-blue-600 transition duration-300">Login</a>
+        <a routerLink="/register" class="bg-blue-600 text-white font-medium px-5 py-2 rounded-lg hover:bg-blue-700 transition duration-300">Register</a>
+      }
+      @if (isAuthenticated$ | async) {
+        <div class="flex items-center gap-3">
+          @if (authService.isAdmin()) {
+            <a routerLink="/admin/dashboard" class="font-medium text-red-600 hover:text-red-700 transition duration-300">Dashboard</a>
+          }
+          <button (click)="logout()" class="bg-red-600 text-white font-medium px-5 py-2 rounded-lg hover:bg-red-700 transition duration-300">Logout</button>
+
+          <!-- Profile Circle (placed to the far right of this block) -->
+          <a routerLink="/admin/dashboard/profile" class="ml-2" title="{{ userName }}">
+            <div class="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center cursor-pointer hover:shadow-lg transition duration-300">
+              <span class="text-white font-bold text-sm">{{ userInitials }}</span>
+            </div>
+          </a>
+        </div>
+      }
+    </div>
+  </div>
+</nav>

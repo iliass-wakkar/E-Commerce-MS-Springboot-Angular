@@ -1,0 +1,14 @@
+{
+  "/auth": {
+    "target": "http://localhost:1111",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/MS-CLIENT": {
+    "target": "http://localhost:1111",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

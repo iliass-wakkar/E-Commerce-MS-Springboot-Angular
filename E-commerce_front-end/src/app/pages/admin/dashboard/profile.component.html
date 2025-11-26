@@ -1,0 +1,130 @@
+<div class="py-6 px-4 sm:px-6 lg:px-8">
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="loading-spinner">
+      <p>Loading profile...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error && !loading) {
+    <div class="error-message">
+      {{ error }}
+    </div>
+  }
+
+  <!-- Profile Content -->
+  @if (user && !loading) {
+    <!-- Profile Header Card -->
+    <div class="profile-card mb-8">
+      <div class="flex items-center gap-6">
+        <div class="profile-avatar">{{ initials }}</div>
+        <div>
+          <h1 class="text-3xl font-bold">{{ user.firstName }} {{ user.lastName }}</h1>
+          <p class="text-sm opacity-90 mt-1">{{ user.role }}</p>
+          <p class="text-sm opacity-75 mt-1">Member since {{ user.createdAt | date: 'MMM yyyy' }}</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="button-group">
+        <button (click)="openEditModal()" class="btn btn-edit">
+          ✏️ Edit Profile
+        </button>
+        <button (click)="openDeleteConfirm()" class="btn btn-delete">
+          🗑️ Delete Account
+        </button>
+      </div>
+    </div>
+
+    <!-- User Information Grid -->
+    <div class="profile-info-grid">
+      <div class="info-item">
+        <div class="info-label">Email</div>
+        <div class="info-value">{{ user.email }}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Phone</div>
+        <div class="info-value">{{ user.phone || 'Not provided' }}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Shipping Address</div>
+        <div class="info-value">{{ user.shippingAddress || 'Not provided' }}</div>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Edit Modal -->
+@if (isEditModalOpen) {
+  <div class="modal-overlay" (click)="closeEditModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">Edit Profile</div>
+
+<!-- Edit Modal -->
+@if (isEditModalOpen) {
+  <div class="modal-overlay" (click)="closeEditModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">Edit Profile</div>
+
+      <div>
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input [value]="firstNameControl?.value" (input)="firstNameControl?.setValue($event.target.value)" type="text" class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input [value]="lastNameControl?.value" (input)="lastNameControl?.setValue($event.target.value)" type="text" class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input [value]="emailControl?.value" (input)="emailControl?.setValue($event.target.value)" type="email" class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input [value]="phoneControl?.value" (input)="phoneControl?.setValue($event.target.value)" type="text" class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Shipping Address</label>
+          <input [value]="shippingAddressControl?.value" (input)="shippingAddressControl?.setValue($event.target.value)" type="text" class="form-input" />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button (click)="closeEditModal()" class="btn btn-cancel">Cancel</button>
+        <button (click)="saveProfile()" [disabled]="editForm.invalid" class="btn btn-save">Save Changes</button>
+      </div>
+    </div>
+  </div>
+}
+
+      <div class="modal-footer">
+        <button (click)="closeEditModal()" class="btn btn-cancel">Cancel</button>
+        <button (click)="saveProfile()" [disabled]="editForm.invalid" class="btn btn-save">Save Changes</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Delete Confirmation Modal -->
+@if (isDeleteConfirmOpen) {
+  <div class="modal-overlay" (click)="closeDeleteConfirm()">
+    <div class="modal-content confirm-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">Delete Account</div>
+      
+      <div class="confirm-dialog-title">Are you sure?</div>
+      <p class="confirm-dialog-message">
+        This action cannot be undone. Your account and all associated data will be permanently deleted.
+      </p>
+
+      <div class="confirm-dialog-buttons">
+        <button (click)="closeDeleteConfirm()" class="btn btn-cancel">Cancel</button>
+        <button (click)="confirmDelete()" class="btn btn-confirm-delete">Delete My Account</button>
+      </div>
+    </div>
+  </div>
+}

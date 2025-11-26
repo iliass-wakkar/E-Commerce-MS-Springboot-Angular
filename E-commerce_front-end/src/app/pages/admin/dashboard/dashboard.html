@@ -1,0 +1,40 @@
+<div class="flex h-screen bg-gray-100">
+  <!-- Sidebar -->
+  <div class="w-64 bg-gray-800 text-white flex-shrink-0 p-4 flex flex-col">
+    <h2 class="text-2xl font-bold mb-8 text-center">Admin Panel</h2>
+    <nav>
+      <ul>
+        <li>
+          <a routerLink="overview" routerLinkActive="bg-gray-700" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+            Overview
+          </a>
+        </li>
+        <li>
+          <a routerLink="clients" routerLinkActive="bg-gray-700" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+            Clients
+          </a>
+        </li>
+        <li>
+          <a routerLink="products" routerLinkActive="bg-gray-700" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+            Produits
+          </a>
+        </li>
+        <li>
+          <a routerLink="orders" routerLinkActive="bg-gray-700" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+            Commandes
+          </a>
+        </li>
+        <li>
+          <a routerLink="profile" routerLinkActive="bg-gray-700" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+            Profile
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-grow p-8 overflow-y-auto">
+    <router-outlet></router-outlet>
+  </div>
+</div>
