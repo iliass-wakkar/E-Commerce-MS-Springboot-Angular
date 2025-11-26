@@ -1,6 +1,6 @@
 server:
   # Le port RÉEL sur lequel ce service va démarrer
-  port: 8080
+  port: 4444
 
 # (Optionnel) Spécifie le nom du service tel qu'enregistré dans Eureka,
 # au cas où il serait différent de spring.application.name

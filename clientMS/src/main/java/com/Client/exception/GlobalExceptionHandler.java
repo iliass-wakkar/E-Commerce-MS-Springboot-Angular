@@ -20,15 +20,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, status);
     }
 
-    @ExceptionHandler(AuthException.class)
-    public ResponseEntity<Object> handleAuthException(AuthException ex, WebRequest request) {
-        return buildErrorResponse(ex, HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<Object> handleForbiddenException(ForbiddenException ex, WebRequest request) {
-        return buildErrorResponse(ex, HttpStatus.FORBIDDEN);
-    }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {

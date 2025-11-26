@@ -1,6 +1,8 @@
 package com.Client.Service;
 
-import com.Client.dto.*;
+import com.Client.dto.UserCreateDTO;
+import com.Client.dto.UserResponseDTO;
+import com.Client.dto.UserUpdateDTO;
 import com.Client.exception.EmailAlreadyExistsException;
 import com.Client.exception.UserNotFoundException;
 import com.Client.model.Role;
@@ -37,16 +39,10 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(createDTO.getPassword()));
         user.setShippingAddress(createDTO.getShippingAddress());
         user.setPhone(createDTO.getPhone());
-        user.setRole(Role.CLIENT); // Default role
+        user.setRole(Role.CLIENT);
 
         User savedUser = userRepository.save(user);
         return convertToResponseDTO(savedUser);
-    }
-
-    @Override
-    public Optional<User> authenticate(String email, String rawPassword) {
-        return userRepository.findByEmail(email)
-                .filter(user -> passwordEncoder.matches(rawPassword, user.getPassword()));
     }
 
     @Override
@@ -64,6 +60,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
     public UserResponseDTO updateUser(Long id, UserUpdateDTO updateDTO) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
@@ -78,17 +79,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO adminUpdateUser(Long id, AdminUserUpdateDTO updateDTO) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+    public UserResponseDTO updateUserByEmail(String email, UserUpdateDTO updateDTO) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
 
         user.setFirstName(updateDTO.getFirstName());
         user.setLastName(updateDTO.getLastName());
         user.setShippingAddress(updateDTO.getShippingAddress());
         user.setPhone(updateDTO.getPhone());
-        if (updateDTO.getRole() != null) {
-            user.setRole(updateDTO.getRole());
-        }
 
         User updatedUser = userRepository.save(user);
         return convertToResponseDTO(updatedUser);
@@ -100,6 +98,13 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException("User not found with id: " + id);
         }
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public void deleteUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+        userRepository.delete(user);
     }
 
     private UserResponseDTO convertToResponseDTO(User user) {

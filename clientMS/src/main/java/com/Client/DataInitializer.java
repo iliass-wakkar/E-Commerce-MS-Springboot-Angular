@@ -23,19 +23,18 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         // Check if the admin user already exists
         if (userRepository.findByEmail("admin@ecommerce.com").isEmpty()) {
-            // Use a DTO to create the user, but the service will set the role to CLIENT by default
             UserCreateDTO adminDTO = new UserCreateDTO();
             adminDTO.setFirstName("Admin");
             adminDTO.setLastName("User");
             adminDTO.setEmail("admin@ecommerce.com");
-            adminDTO.setPassword("adminpassword"); // Use a secure password in a real app
+            adminDTO.setPassword("adminpassword"); // Password will be encoded
             adminDTO.setShippingAddress("N/A");
             adminDTO.setPhone("N/A");
 
-            // Register the user first
+            // Register the user
             userService.registerUser(adminDTO);
 
-            // Now, fetch the user and update its role to ADMIN
+            // Update role to ADMIN
             User adminUser = userRepository.findByEmail("admin@ecommerce.com").get();
             adminUser.setRole(Role.ADMIN);
             userRepository.save(adminUser);

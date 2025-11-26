@@ -16,12 +16,16 @@ public class MyGlobalLogFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        String url = exchange.getRequest().getURI().toString();
-        log.info("Request received for URL: {}",url);
-        System.out.println("MyGlobalLogFilter : Requête interceptée ! URL : {}"+
-                url);
-
-        return chain.filter(exchange);
+        log.info("Request received -> {} {}",
+                exchange.getRequest().getMethod(),
+                exchange.getRequest().getURI());
+        
+        return chain.filter(exchange).then(Mono.fromRunnable(() -> {
+            log.info("Response sent -> {} {} with status {}",
+                    exchange.getRequest().getMethod(),
+                    exchange.getRequest().getURI(),
+                    exchange.getResponse().getStatusCode());
+        }));
     }
 
     @Override
