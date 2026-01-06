@@ -8,19 +8,21 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
+/**
+ * Spring Security configuration for JWT-based authentication
+ * Integrates with reactive WebFlux and JWT filter
+ */
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
-    // Public endpoints that don't require authentication
+    // Public endpoints that don't require JWT authentication
     private static final String[] PUBLIC_ENDPOINTS = {
         "/auth/login",
         "/auth/register",
         "/actuator/**",
         "/error"
     };
-
-    // Note: /auth/me is NOT in public endpoints - it requires authentication
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -30,18 +32,31 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         return http
+            // Disable CSRF for microservices
             .csrf(ServerHttpSecurity.CsrfSpec::disable)
+
+            // Configure authorization
             .authorizeExchange(exchanges -> exchanges
                 // Allow OPTIONS for CORS preflight
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
-                // Allow public endpoints without authentication
+
+                // Public endpoints - no authentication required
                 .pathMatchers(PUBLIC_ENDPOINTS).permitAll()
-                // All other requests are permitted (no authentication required)
+
+                // Protected endpoints - require authentication via JWT
+                .pathMatchers("/auth/me").authenticated()
+                .pathMatchers("/auth/logout").authenticated()
+
+                // All other requests are allowed (will be handled by gateway routes)
                 .anyExchange().permitAll()
             )
-            // Disable default authentication mechanisms
-            .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+
+            // Disable form login (we use JWT)
             .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+
+            // Disable HTTP Basic auth (we use JWT)
+            .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+
             .build();
     }
 }

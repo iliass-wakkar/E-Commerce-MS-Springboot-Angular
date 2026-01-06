@@ -96,4 +96,22 @@ export class ClientsComponent implements OnInit {
       });
     }
   }
+
+  promoteUser(id: number): void {
+    if (confirm('Voulez-vous promouvoir cet utilisateur en ADMIN ?')) {
+      this.userService.updateUserRole(id, 'ADMIN').subscribe({
+        next: () => this.loadClients(),
+        error: (err) => alert('Erreur lors de la promotion')
+      });
+    }
+  }
+
+  demoteUser(id: number): void {
+    if (confirm('Voulez-vous rétrograder cet utilisateur en USER ?')) {
+      this.userService.updateUserRole(id, 'USER').subscribe({
+        next: () => this.loadClients(),
+        error: (err) => alert('Erreur lors de la rétrogradation')
+      });
+    }
+  }
 }

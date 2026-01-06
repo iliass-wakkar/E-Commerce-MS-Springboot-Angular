@@ -1,31 +1,72 @@
+<!DOCTYPE html>
 <div class="container mx-auto max-w-7xl px-4 py-12">
   <!-- New Arrivals Section -->
   <h2 class="text-3xl font-bold text-gray-900 mb-8">New Arrivals</h2>
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
     <!-- Product Card -->
-    <div *ngFor="let product of products"
-      class="bg-white rounded-lg shadow-lg overflow-hidden transition transform hover:scale-105">
-      <img [src]="product.imageUrl" alt="Product Image" class="w-full h-56 object-cover">
-      <div class="p-6">
-        <p class="text-sm text-blue-600 font-medium mb-1">{{ product.productCategory?.name || 'Category' }}</p>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ product.name }}</h3>
-        <p class="text-xl font-bold text-gray-900">{{ product.price | currency }}</p>
+    @for (product of products; track product.id) {
+      <div class="bg-white rounded-lg shadow-lg overflow-hidden transition transform hover:scale-105 cursor-pointer" (click)="viewProductDetail(product.id)">
+        <img [src]="product.imageUrl" alt="Product Image" class="w-full h-56 object-cover">
+        <div class="p-6">
+          <p class="text-sm text-blue-600 font-medium mb-1">{{ product.productCategory.name || 'Category' }}</p>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ product.name }}</h3>
+          <div class="flex justify-between items-center">
+            <p class="text-xl font-bold text-gray-900">{{ product.price | currency }}</p>
+            <button
+              (click)="$event.stopPropagation(); addToCart(product, $event)"
+              [class.bg-green-600]="addedToCartId === product.id"
+              [class.bg-blue-600]="addedToCartId !== product.id"
+              class="hover:bg-blue-700 text-white font-bold p-2 rounded-full transition">
+              @if (addedToCartId === product.id) {
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-white">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-5 h-5 text-white">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2.25l1.5 9.75c.12.78.78 1.5 1.56 1.5h8.34c.78 0 1.44-.72 1.56-1.5L21 7.5H6" />
+                  <circle cx="10" cy="20" r="1.25" />
+                  <circle cx="18" cy="20" r="1.25" />
+                </svg>
+              }
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
+    }
   </div>
 
   <!-- Best Sellers Section -->
   <h2 class="text-3xl font-bold text-gray-900 mt-20 mb-8">Best Sellers</h2>
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
     <!-- Product Card (reversed order for variety) -->
-    <div *ngFor="let product of products.slice().reverse()"
-      class="bg-white rounded-lg shadow-lg overflow-hidden transition transform hover:scale-105">
-      <img [src]="product.imageUrl" alt="Product Image" class="w-full h-56 object-cover">
-      <div class="p-6">
-        <p class="text-sm text-blue-600 font-medium mb-1">{{ product.productCategory?.name || 'Category' }}</p>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ product.name }}</h3>
-        <p class="text-xl font-bold text-gray-900">{{ product.price | currency }}</p>
+    @for (product of products.slice().reverse(); track product.id) {
+      <div class="bg-white rounded-lg shadow-lg overflow-hidden transition transform hover:scale-105 cursor-pointer" (click)="viewProductDetail(product.id)">
+        <img [src]="product.imageUrl" alt="Product Image" class="w-full h-56 object-cover">
+        <div class="p-6">
+          <p class="text-sm text-blue-600 font-medium mb-1">{{ product.productCategory.name || 'Category' }}</p>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ product.name }}</h3>
+          <div class="flex justify-between items-center">
+            <p class="text-xl font-bold text-gray-900">{{ product.price | currency }}</p>
+            <button
+              (click)="$event.stopPropagation(); addToCart(product, $event)"
+              [class.bg-green-600]="addedToCartId === product.id"
+              [class.bg-blue-600]="addedToCartId !== product.id"
+              class="hover:bg-blue-700 text-white p-2 rounded-full transition">
+              @if (addedToCartId === product.id) {
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-white">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-5 h-5 text-white">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2.25l1.5 9.75c.12.78.78 1.5 1.56 1.5h8.34c.78 0 1.44-.72 1.56-1.5L21 7.5H6" />
+                  <circle cx="10" cy="20" r="1.25" />
+                  <circle cx="18" cy="20" r="1.25" />
+                </svg>
+              }
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
+    }
   </div>
 </div>

@@ -8,7 +8,10 @@ import { ClientsComponent } from './pages/admin/dashboard/clients.component';
 import { ProductsComponent } from './pages/admin/dashboard/products.component';
 import { OrdersComponent } from './pages/admin/dashboard/orders.component';
 import { AdminProfileComponent } from './pages/admin/dashboard/profile.component';
+import { OrdersComponent as ShopOrdersComponent } from './components/orders/orders.component';
+import { ProductDetailComponent } from './pages/product-detail/product-detail.component';
 import { adminGuard } from './guards/admin.guard';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -26,15 +29,24 @@ export const routes: Routes = [
   },
   {
     path: 'admin/dashboard',
-    component: DashboardComponent, // This component now acts as a layout
+    component: DashboardComponent,
     canActivate: [adminGuard],
     children: [
-      { path: '', redirectTo: 'overview', pathMatch: 'full' }, // Default redirect
+      { path: '', redirectTo: 'overview', pathMatch: 'full' },
       { path: 'overview', component: OverviewComponent },
       { path: 'clients', component: ClientsComponent },
       { path: 'products', component: ProductsComponent },
       { path: 'orders', component: OrdersComponent },
       { path: 'profile', component: AdminProfileComponent }
     ]
+  },
+  {
+    path: 'orders',
+    component: ShopOrdersComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'products/:id',
+    component: ProductDetailComponent
   }
 ];

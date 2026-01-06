@@ -2,41 +2,51 @@ version: '3.8'
 
 services:
   # --------------------------------
-  # 1. POSTGRESQL DATABASE (Product)
+  # 1. DB PRODUCT (Port 5432)
   # --------------------------------
   postgres_product:
     image: postgres:15-alpine
     container_name: pg_product
     environment:
-      # Celles-ci doivent correspondre à votre product-service.yml
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mysecretpassword
-      POSTGRES_DB: product_db 
+      POSTGRES_DB: product_db
     ports:
-      - "5432:5432" # Mappage de port Hôte:Conteneur
+      - "5432:5432" # Standard Port
     volumes:
-      - pg_product_data:/var/lib/postgresql/data # Stockage persistant
+      - pg_product_data:/var/lib/postgresql/data
 
   # --------------------------------
-  # 2. POSTGRESQL DATABASE (Client) - NOUVEAU
+  # 2. DB CLIENT (Port 5433)
   # --------------------------------
   postgres_client:
     image: postgres:15-alpine
     container_name: pg_client
     environment:
-      # Celles-ci doivent correspondre à votre ms-client.yml
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mysecretpassword
-      POSTGRES_DB: client_db 
+      POSTGRES_DB: client_db
     ports:
-      # IMPORTANT : Le port de l'hôte est 5433 car 5432 est déjà pris
-      - "5433:5432" 
+      - "5433:5432" # Host Port 5433 -> Container Port 5432
     volumes:
-      - pg_client_data:/var/lib/postgresql/data # Stockage persistant séparé
+      - pg_client_data:/var/lib/postgresql/data
 
-  # Vous ajouterez Eureka, Config, et vos microservices de domaine ici plus tard
-  # ...
+  # --------------------------------
+  # 3. DB ORDER (Port 5434)
+  # --------------------------------
+  postgres_order:
+    image: postgres:15-alpine
+    container_name: pg_order
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: order_db
+    ports:
+      - "5434:5432" # Host Port 5434 -> Container Port 5432
+    volumes:
+      - pg_order_data:/var/lib/postgresql/data
 
 volumes:
-  pg_product_data: # Renommé pour plus de clarté
-  pg_client_data:  # Ajout d'un nouveau volume pour les données client
+  pg_product_data:
+  pg_client_data:
+  pg_order_data:

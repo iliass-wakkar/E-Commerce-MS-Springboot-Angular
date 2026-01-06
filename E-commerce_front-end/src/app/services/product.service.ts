@@ -29,18 +29,30 @@ export interface ProductResponseDTO {
     updatedAt?: string;
 }
 
+export interface CategoryDTO {
+    id: number;
+    name: string;
+    description?: string;
+}
+
 @Injectable({
     providedIn: 'root'
 })
 export class ProductService {
     // Gateway URL: http://localhost:1111/PRODUCT-SERVICE/products
     private apiUrl = `${environment.apiUrl}/PRODUCT-SERVICE/products`;
+    private categoryUrl = `${environment.apiUrl}/PRODUCT-SERVICE/categories`;
 
     constructor(private http: HttpClient) { }
 
     // Health check
     getServiceStatus(): Observable<string> {
         return this.http.get(`${this.apiUrl}/status`, { responseType: 'text' });
+    }
+
+    // Get all categories
+    getCategories(): Observable<CategoryDTO[]> {
+        return this.http.get<CategoryDTO[]>(this.categoryUrl);
     }
 
     // Create product

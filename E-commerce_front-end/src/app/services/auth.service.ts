@@ -5,6 +5,7 @@ import { tap, catchError, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../environments/environment';
+import { CartService } from './cart.service';
 
 export interface User {
     id: string;
@@ -41,6 +42,7 @@ export class AuthService {
     constructor(
         private http: HttpClient,
         private router: Router,
+        private cartService: CartService,
         @Inject(PLATFORM_ID) private platformId: Object
     ) {
         this.initializeAuth();
@@ -90,6 +92,9 @@ export class AuthService {
                 this.isAuthenticatedSubject.next(true);
                 this.currentUserSubject.next(user);
                 this.updateUserRoles(user);
+
+                // Load cart from backend after successful login
+                this.cartService.loadCart();
             })
         );
     }
@@ -120,6 +125,8 @@ export class AuthService {
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('user');
         }
+        // Clear cart from memory (not API) since we're logging out
+        this.cartService.clearLocalCart();
         this.isAuthenticatedSubject.next(false);
         this.userRoleSubject.next(null);
         this.currentUserSubject.next(null);
@@ -159,9 +166,41 @@ export class AuthService {
             return localStorage.getItem('accessToken');
         }
         return null;
-    }
+    }   
 
     getAuthenticatedUser(): Observable<User> {
         return this.getProfile();
+    }
+
+    updateProfile(userData: any): Observable<any> {
+        const user = this.currentUserSubject.value;
+        if (user && user.id) {
+            return this.http.put<any>(`${environment.apiUrl}/MS-CLIENT/api/v1/users/${user.id}`, userData).pipe(
+                tap(response => {
+                    // Update current user in state
+                    const updatedUser: User = {
+                        ...user,
+                        email: response.email || user.email,
+                        firstName: response.firstName,
+                        lastName: response.lastName
+                    };
+                    this.currentUserSubject.next(updatedUser);
+                    if (isPlatformBrowser(this.platformId)) {
+                        localStorage.setItem('user', JSON.stringify(updatedUser));
+                    }
+                })
+            );
+        }
+        return throwError(() => new Error('User ID not found'));
+    }
+
+    deleteProfile(): Observable<any> {
+        const user = this.currentUserSubject.value;
+        if (user && user.id) {
+            return this.http.delete<any>(`${environment.apiUrl}/MS-CLIENT/api/v1/users/${user.id}`).pipe(
+                tap(() => this.clearLocalSession())
+            );
+        }
+        return throwError(() => new Error('User ID not found'));
     }
 }

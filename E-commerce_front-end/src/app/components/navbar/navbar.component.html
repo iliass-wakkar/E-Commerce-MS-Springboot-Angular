@@ -1,31 +1,42 @@
 <nav class="bg-white shadow-md sticky top-0 z-50">
   <div class="container mx-auto max-w-7xl px-4 flex justify-between items-center py-4">
     <div class="flex items-center">
-      <a routerLink="/" class="text-3xl font-bold text-blue-600">E-Shop</a>
+      <button (click)="navigate('/')" class="text-3xl font-bold text-blue-600 bg-none border-none cursor-pointer">E-Shop</button>
     </div>
     <div class="hidden md:flex gap-6">
-      <a routerLink="/" class="text-gray-600 hover:text-blue-600">Home</a>
-      <a routerLink="/products" class="text-gray-600 hover:text-blue-600">Products</a>
-      <a routerLink="/categories" class="text-gray-600 hover:text-blue-600">Categories</a>
+      <button (click)="navigate('/')" class="text-gray-600 hover:text-blue-600 bg-none border-none cursor-pointer">Home</button>
+      <button (click)="navigate('/products')" class="text-gray-600 hover:text-blue-600 bg-none border-none cursor-pointer">Products</button>
+      <button (click)="navigate('/categories')" class="text-gray-600 hover:text-blue-600 bg-none border-none cursor-pointer">Categories</button>
     </div>
     <div class="flex items-center gap-4">
+      @if (isAuthenticated$ | async) {
+      <button (click)="navigate('/orders')" class="relative group bg-none border-none cursor-pointer" aria-label="Shopping cart">
+        <div class="w-11 h-11 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center transition duration-300 group-hover:shadow-md group-hover:border-blue-200">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-700 group-hover:text-blue-600">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 11-6 0 3 3 0 016 0zm13.5 0a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.106 5.272l2.228.557m0 0l1.166 4.673a1.125 1.125 0 001.092.848h7.91a1.125 1.125 0 001.092-.848l.813-3.25a1.125 1.125 0 00-1.092-1.402H7.883m-1.549 0L5.72 5.272" />
+          </svg>
+        </div>
+        <span class="cart-badge" aria-label="Cart items">{{ cartCount$ | async }}</span>
+      </button>
+      }
       @if (!(isAuthenticated$ | async)) {
-        <a routerLink="/login" class="text-gray-600 font-medium hover:text-blue-600 transition duration-300">Login</a>
-        <a routerLink="/register" class="bg-blue-600 text-white font-medium px-5 py-2 rounded-lg hover:bg-blue-700 transition duration-300">Register</a>
+        <button (click)="navigate('/login')" class="text-gray-600 font-medium hover:text-blue-600 transition duration-300 bg-none border-none cursor-pointer">Login</button>
+        <button (click)="navigate('/register')" class="bg-blue-600 text-white font-medium px-5 py-2 rounded-lg hover:bg-blue-700 transition duration-300 border-none cursor-pointer">Register</button>
       }
       @if (isAuthenticated$ | async) {
         <div class="flex items-center gap-3">
           @if (authService.isAdmin()) {
-            <a routerLink="/admin/dashboard" class="font-medium text-red-600 hover:text-red-700 transition duration-300">Dashboard</a>
+            <button (click)="navigate('/admin/dashboard')" class="font-medium text-red-600 hover:text-red-700 transition duration-300 bg-none border-none cursor-pointer">Dashboard</button>
           }
           <button (click)="logout()" class="bg-red-600 text-white font-medium px-5 py-2 rounded-lg hover:bg-red-700 transition duration-300">Logout</button>
 
-          <!-- Profile Circle (placed to the far right of this block) -->
-          <a routerLink="/admin/dashboard/profile" class="ml-2" title="{{ userName }}">
+          <!-- Profile Circle -->
+          <button (click)="navigate('/admin/dashboard/profile')" class="ml-2 bg-none border-none cursor-pointer" [title]="userName">
             <div class="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center cursor-pointer hover:shadow-lg transition duration-300">
               <span class="text-white font-bold text-sm">{{ userInitials }}</span>
             </div>
-          </a>
+          </button>
         </div>
       }
     </div>

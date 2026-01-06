@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ProductService, ProductResponseDTO, ProductRequestDTO } from '../../../services/product.service';
+import { ProductService, ProductResponseDTO, ProductRequestDTO, CategoryDTO } from '../../../services/product.service';
 
 @Component({
   selector: 'app-products',
@@ -58,7 +58,7 @@ import { ProductService, ProductResponseDTO, ProductRequestDTO } from '../../../
               <td class="p-4 text-gray-600">{{ product.manufacturer }}</td>
               <td class="p-4 text-gray-600">
                 <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded-lg text-xs">
-                  {{ product.productCategory?.name || 'N/A' }}
+                  {{ product.productCategory.name || 'N/A' }}
                 </span>
               </td>
               <td class="p-4 text-right space-x-2">
@@ -104,8 +104,11 @@ import { ProductService, ProductResponseDTO, ProductRequestDTO } from '../../../
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">ID Catégorie</label>
-            <input formControlName="categoryId" type="number" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
+            <select formControlName="categoryId" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white">
+              <option [ngValue]="null" disabled>Sélectionner une catégorie</option>
+              <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+            </select>
           </div>
           
           <div class="grid grid-cols-2 gap-4">
@@ -132,6 +135,7 @@ import { ProductService, ProductResponseDTO, ProductRequestDTO } from '../../../
 })
 export class ProductsComponent implements OnInit {
   products: ProductResponseDTO[] = [];
+  categories: CategoryDTO[] = [];
   loading = true;
   error: string | null = null;
 
@@ -159,6 +163,14 @@ export class ProductsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProducts();
+    this.loadCategories();
+  }
+
+  loadCategories(): void {
+    this.productService.getCategories().subscribe({
+      next: (data) => this.categories = data,
+      error: (err) => console.error('Failed to load categories', err)
+    });
   }
 
   loadProducts(): void {

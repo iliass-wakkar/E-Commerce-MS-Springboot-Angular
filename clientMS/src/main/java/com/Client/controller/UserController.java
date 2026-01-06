@@ -3,6 +3,8 @@ package com.Client.controller;
 import com.Client.dto.*;
 import com.Client.model.User;
 import com.Client.Service.UserService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,17 +14,14 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
     // Create user (registration)
     @PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserCreateDTO createDTO) {
+    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserCreateDTO createDTO) {
         UserResponseDTO registeredUser = userService.registerUser(createDTO);
         return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
     }
@@ -52,6 +51,13 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @RequestBody UserUpdateDTO updateDTO) {
         UserResponseDTO updatedUser = userService.updateUser(id, updateDTO);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    // Update user role (Admin only - enforced by Gateway)
+    @PutMapping("/{id}/role")
+    public ResponseEntity<UserResponseDTO> updateUserRole(@PathVariable Long id, @RequestParam com.Client.model.Role role) {
+        UserResponseDTO updatedUser = userService.updateUserRole(id, role);
         return ResponseEntity.ok(updatedUser);
     }
 

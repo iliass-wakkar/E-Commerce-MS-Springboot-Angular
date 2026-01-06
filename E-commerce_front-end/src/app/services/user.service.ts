@@ -36,4 +36,8 @@ export class UserService {
     // Client MS has POST /api/v1/users for registration
     return this.http.post(this.apiUrl, userData);
   }
+
+  updateUserRole(id: number, role: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/role`, null, { params: { role } });
+  }
 }

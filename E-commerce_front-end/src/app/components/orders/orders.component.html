@@ -1,0 +1,362 @@
+<div class="orders-container">
+  <!-- Header -->
+  <div class="orders-header">
+    <h1>Orders & Shopping Cart</h1>
+    <p class="subtitle">Manage your cart and view your orders</p>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <div class="tabs-navigation">
+    <button 
+      [class.active]="selectedTab === 'cart'" 
+      (click)="selectedTab = 'cart'"
+      class="tab-button">
+      <span class="icon">🛒</span> Cart <span class="badge" *ngIf="cartItemCount > 0">{{ cartItemCount }}</span>
+    </button>
+    <button 
+      [class.active]="selectedTab === 'products'" 
+      (click)="selectedTab = 'products'"
+      class="tab-button">
+      <span class="icon">📦</span> Products
+    </button>
+    <button 
+      [class.active]="selectedTab === 'orders'" 
+      (click)="selectedTab = 'orders'"
+      class="tab-button">
+      <span class="icon">📋</span> My Orders <span class="badge" *ngIf="orders.length > 0">{{ orders.length }}</span>
+    </button>
+  </div>
+
+  <!-- ==================== CART TAB ==================== -->
+  @if (selectedTab === 'cart') {
+    <div class="tab-content cart-tab">
+      <!-- Success Message -->
+      @if (orderSuccess) {
+        <div class="alert alert-success">
+          ✓ Order placed successfully! Your order has been submitted.
+        </div>
+      }
+
+      <!-- Error Message -->
+      @if (orderError) {
+        <div class="alert alert-error">
+          ✗ {{ orderError }}
+        </div>
+      }
+
+      <!-- Cart Empty State -->
+      @if (cartItems.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">🛒</div>
+          <h3>Your cart is empty</h3>
+          <p>Browse our products and add items to get started</p>
+          <button (click)="selectedTab = 'products'" class="btn btn-primary">
+            Continue Shopping
+          </button>
+        </div>
+      }
+
+      <!-- Cart Items -->
+      @if (cartItems.length > 0) {
+        <div class="cart-content">
+          <!-- Cart Items List -->
+          <div class="cart-items">
+            <div class="cart-header">
+              <span>Product</span>
+              <span>Price</span>
+              <span>Quantity</span>
+              <span>Subtotal</span>
+              <span></span>
+            </div>
+
+            @for (item of cartItems; track item.product.id) {
+              <div class="cart-item">
+                <div class="item-product">
+                  <img [src]="item.product.imageUrl" [alt]="item.product.name" class="product-image">
+                  <div class="product-info">
+                    <p class="product-name">{{ item.product.name }}</p>
+                    <p class="product-manufacturer">{{ item.product.manufacturer }}</p>
+                  </div>
+                </div>
+                <div class="item-price">${{ item.product.price.toFixed(2) }}</div>
+                <div class="item-quantity">
+                  <button (click)="updateCartItemQuantity(item, item.quantity - 1)" class="qty-btn">−</button>
+                  <input type="number" [value]="item.quantity" readonly class="qty-input">
+                  <button (click)="updateCartItemQuantity(item, item.quantity + 1)" class="qty-btn">+</button>
+                </div>
+                <div class="item-subtotal">${{ item.subtotal.toFixed(2) }}</div>
+                <button (click)="removeFromCart(item)" class="btn-remove" title="Remove from cart">✕</button>
+              </div>
+            }
+          </div>
+
+          <!-- Cart Summary -->
+          <div class="cart-summary">
+            <div class="summary-box">
+              <div class="summary-row">
+                <span>Subtotal:</span>
+                <span>${{ cartTotal.toFixed(2) }}</span>
+              </div>
+              <div class="summary-row">
+                <span>Shipping:</span>
+                <span>Free</span>
+              </div>
+              <div class="summary-row">
+                <span>Tax:</span>
+                <span>${{ (cartTotal * 0.1).toFixed(2) }}</span>
+              </div>
+              <div class="summary-divider"></div>
+              <div class="summary-row total">
+                <span>Total:</span>
+                <span>${{ (cartTotal * 1.1).toFixed(2) }}</span>
+              </div>
+
+              <button 
+                (click)="placeOrder()" 
+                [disabled]="orderLoading || cartItems.length === 0"
+                class="btn btn-success btn-large">
+                @if (orderLoading) {
+                  <span>Processing...</span>
+                } @else {
+                  <span>Place Order</span>
+                }
+              </button>
+
+              <button 
+                (click)="clearCart()" 
+                class="btn btn-secondary btn-large">
+                Clear Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ==================== PRODUCTS TAB ==================== -->
+  @if (selectedTab === 'products') {
+    <div class="tab-content products-tab">
+      @if (loadingProducts) {
+        <div class="loading">Loading products...</div>
+      }
+
+      @if (!loadingProducts && availableProducts.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">📦</div>
+          <h3>No products available</h3>
+          <p>Check back soon for new items</p>
+        </div>
+      }
+
+      @if (!loadingProducts && availableProducts.length > 0) {
+        <div class="products-grid">
+          @for (product of availableProducts; track product.id) {
+            <div class="product-card">
+              <div class="product-image-container">
+                <img [src]="product.imageUrl" [alt]="product.name" class="product-image">
+                <span class="stock-badge" [class.out-of-stock]="product.stockQuantity === 0">
+                  {{ product.stockQuantity > 0 ? 'In Stock' : 'Out of Stock' }}
+                </span>
+              </div>
+              <div class="product-details">
+                <h3 class="product-name">{{ product.name }}</h3>
+                <p class="product-manufacturer">{{ product.manufacturer }}</p>
+                <p class="product-category">{{ product.productCategory.name }}</p>
+                <div class="product-footer">
+                  <span class="product-price">${{ product.price.toFixed(2) }}</span>
+                  <button 
+                    (click)="openAddProductModal(product)"
+                    [disabled]="product.stockQuantity === 0"
+                    class="btn btn-primary btn-sm">
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ==================== ORDERS TAB ==================== -->
+  @if (selectedTab === 'orders') {
+    <div class="tab-content orders-tab">
+      @if (loadingOrders) {
+        <div class="loading">Loading orders...</div>
+      }
+
+      @if (!loadingOrders && orders.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <h3>No orders yet</h3>
+          <p>Start shopping and place your first order</p>
+          <button (click)="selectedTab = 'products'" class="btn btn-primary">
+            Browse Products
+          </button>
+        </div>
+      }
+
+      @if (!loadingOrders && orders.length > 0) {
+        <div class="orders-list">
+          @for (order of orders; track order.id) {
+            <div class="order-card">
+              <div class="order-header">
+                <div class="order-info">
+                  <h3>Order #{{ order.id }}</h3>
+                  <p class="order-date">{{ order.orderDate | date: 'MMM dd, yyyy • HH:mm' }}</p>
+                </div>
+                <span [class]="'status-badge ' + getStatusBadgeClass(order.status)">
+                  {{ order.status }}
+                </span>
+              </div>
+
+              <div class="order-details">
+                <div class="detail-row">
+                  <span class="detail-label">Order Number:</span>
+                  <span class="detail-value">{{ order.orderNumber }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Items:</span>
+                  <span class="detail-value">{{ order.orderLineItems.length }} product(s)</span>
+                </div>
+                <div class="order-line-items">
+                  @for (item of order.orderLineItems; track item.id) {
+                    <div class="line-item">
+                      <div class="line-item-id">#{{ item.productId }}</div>
+                      <div class="line-item-qty">x{{ item.quantity }}</div>
+                      <div class="line-item-price">${{ item.price.toFixed(2) }}</div>
+                      <div class="line-item-subtotal">${{ (item.price * item.quantity).toFixed(2) }}</div>
+                    </div>
+                  }
+                </div>
+                <div class="detail-row total">
+                  <span class="detail-label">Order Total:</span>
+                  <span class="detail-value">${{ order.totalPrice.toFixed(2) }}</span>
+                </div>
+              </div>
+
+              <div class="order-actions">
+                <button (click)="viewOrderDetails(order)" class="btn btn-secondary btn-sm">
+                  View Details
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- ==================== ADD TO CART MODAL ==================== -->
+@if (showAddProductModal && selectedProduct) {
+  <div class="modal-overlay" (click)="closeAddProductModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Add to Cart</h2>
+        <button (click)="closeAddProductModal()" class="modal-close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-product-info">
+          <img [src]="selectedProduct.imageUrl" [alt]="selectedProduct.name" class="modal-product-image">
+          <div>
+            <h3>{{ selectedProduct.name }}</h3>
+            <p class="product-manufacturer">{{ selectedProduct.manufacturer }}</p>
+            <p class="modal-price">${{ selectedProduct.price.toFixed(2) }}</p>
+          </div>
+        </div>
+
+        <form [formGroup]="addToCartForm" class="modal-form">
+          <div class="form-group">
+            <label for="quantity">Quantity:</label>
+            <input 
+              id="quantity"
+              type="number" 
+              formControlName="quantity"
+              min="1"
+              max="100"
+              class="form-input">
+            @if (addToCartForm.get('quantity')?.hasError('required')) {
+              <span class="error">Quantity is required</span>
+            }
+            @if (addToCartForm.get('quantity')?.hasError('min')) {
+              <span class="error">Minimum quantity is 1</span>
+            }
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button (click)="closeAddProductModal()" class="btn btn-secondary">Cancel</button>
+        <button (click)="confirmAddToCart()" [disabled]="addToCartForm.invalid" class="btn btn-success">
+          Add to Cart
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ==================== ORDER DETAILS MODAL ==================== -->
+@if (showOrderDetailsModal && selectedOrder) {
+  <div class="modal-overlay" (click)="closeOrderDetailsModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Order #{{ selectedOrder.id }} Details</h2>
+        <button (click)="closeOrderDetailsModal()" class="modal-close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="order-detail-grid">
+          <div class="detail-section">
+            <h4>Order Information</h4>
+            <div class="detail-item">
+              <span class="label">Order ID:</span>
+              <span class="value">#{{ selectedOrder.id }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Order Number:</span>
+              <span class="value">{{ selectedOrder.orderNumber }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Status:</span>
+              <span [class]="'status-badge ' + getStatusBadgeClass(selectedOrder.status)">
+                {{ selectedOrder.status }}
+              </span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Order Date:</span>
+              <span class="value">{{ selectedOrder.orderDate | date: 'MMM dd, yyyy HH:mm' }}</span>
+            </div>
+          </div>
+
+            <div class="detail-section">
+              <h4>Line Items</h4>
+              @if (selectedOrder.orderLineItems.length === 0) {
+                <div class="detail-item">
+                  <span class="label">Items:</span>
+                  <span class="value">No items</span>
+                </div>
+              }
+              @for (item of selectedOrder.orderLineItems; track item.id) {
+                <div class="detail-item">
+                  <span class="label">Product #{{ item.productId }}</span>
+                  <span class="value">x{{ item.quantity }} @ ${{ item.price.toFixed(2) }}</span>
+                </div>
+              }
+              <div class="detail-item total">
+                <span class="label">Order Total:</span>
+                <span class="value">${{ selectedOrder.totalPrice.toFixed(2) }}</span>
+              </div>
+            </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button (click)="closeOrderDetailsModal()" class="btn btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+}

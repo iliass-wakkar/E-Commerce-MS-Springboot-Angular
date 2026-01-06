@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<div class="product-page">
+  @if (loading) {
+    <div class="loading-container">
+      <p>Loading product details...</p>
+    </div>
+  } @else if (error) {
+    <div class="error-container">
+      <p>{{ error }}</p>
+    </div>
+  } @else if (product) {
+  <div class="breadcrumbs">
+    <span>Home</span>
+    <span class="divider">/</span>
+    <span>{{ product.productCategory.name || 'Products' }}</span>
+    <span class="divider">/</span>
+    <span class="active">{{ product.name }}</span>
+  </div>
+
+  <div class="product-hero">
+    <div class="gallery">
+      <div class="main-image">
+        <img [src]="selectedImage" [alt]="product.name">
+        <div class="badge">{{ product.productCategory.name }}</div>
+      </div>
+      <div class="thumbnails">
+        @for (image of product.gallery; track image) {
+          <button class="thumb" [class.active]="image === selectedImage" (click)="setImage(image)">
+            <img [src]="image" [alt]="product.name">
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="header">
+        <div>
+          <p class="eyebrow">{{ product.manufacturer }}</p>
+          <h1>{{ product.name }}</h1>
+          <p class="desc">{{ product.description }}</p>
+        </div>
+        <div class="rating">
+          <span class="stars">★ {{ product.rating }}</span>
+          <span class="reviews">{{ product.reviewsCount }} reviews</span>
+        </div>
+      </div>
+
+      <div class="price-row">
+        <div>
+          <div class="price">${{ product.price.toFixed(2) }}</div>
+          <div class="sku">SKU: SKU-{{ product.id }}</div>
+        </div>
+        <div class="stock" [class.out]="product.stockQuantity === 0">
+          {{ product.stockQuantity &gt; 0 ? 'In Stock (' + product.stockQuantity + ')' : 'Out of Stock' }}
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button 
+          class="btn primary" 
+          [disabled]="product.stockQuantity === 0"
+          [class.success]="addedToCart"
+          (click)="addToCart()">
+          @if (addedToCart) {
+            ✓ Added to Cart
+          } @else if (isInCart()) {
+            Add More
+          } @else {
+            Add to Cart
+          }
+        </button>
+        <button 
+          class="btn ghost" 
+          [disabled]="product.stockQuantity === 0"
+          (click)="buyNow()">
+          Buy Now
+        </button>
+      </div>
+
+      <div class="service-strip">
+        <div>
+          <span class="icon">🚚</span>
+          <div>
+            <p class="label">Shipping</p>
+            <p class="value">{{ product.shipping }}</p>
+          </div>
+        </div>
+        <div>
+          <span class="icon">↺</span>
+          <div>
+            <p class="label">Returns</p>
+            <p class="value">{{ product.returnPolicy }}</p>
+          </div>
+        </div>
+        <div>
+          <span class="icon">🏷️</span>
+          <div>
+            <p class="label">Category</p>
+            <p class="value">{{ product.productCategory.name }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <div class="panel">
+      <h3>Highlights</h3>
+      <div class="chips">
+        @for (item of product.highlights; track item) {
+          <span class="chip">{{ item }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="panel specs">
+      <h3>Specifications</h3>
+      <div class="spec-grid">
+        @for (spec of product.specs; track spec.label) {
+          <div class="spec-item">
+            <p class="label">{{ spec.label }}</p>
+            <p class="value">{{ spec.value }}</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="panel reviews">
+      <div class="reviews-header">
+        <div>
+          <p class="eyebrow">Customer Voices</p>
+          <h3>Loved by audio enthusiasts</h3>
+        </div>
+        <div class="pill">★ {{ product.rating }} • {{ product.reviewsCount }} reviews</div>
+      </div>
+      <div class="review-list">
+        <div class="review-card">
+          <div class="review-top">
+            <div class="avatar">AM</div>
+            <div>
+              <p class="name">Amelia Moore</p>
+              <p class="meta">Audiophile • Verified Purchase</p>
+            </div>
+            <span class="score">5.0</span>
+          </div>
+          <p class="review-text">Incredible clarity and bass control. ANC is on par with flagship models, and the comfort is the best I have tried.</p>
+        </div>
+        <div class="review-card">
+          <div class="review-top">
+            <div class="avatar">JD</div>
+            <div>
+              <p class="name">Jordan Diaz</p>
+              <p class="meta">Music Producer</p>
+            </div>
+            <span class="score">4.7</span>
+          </div>
+          <p class="review-text">Detail retrieval is excellent, and the soundstage feels wide for closed-back headphones. Battery life is stellar.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  } @else {
+    <div class="empty-state">
+      <p>No product found</p>
+    </div>
+  }
+</div>

@@ -1,20 +1,8 @@
-
 spring:
   application:
     name: reactivegateway
   config:
     import: optional:configserver:http://localhost:8888
-  cloud:
-    gateway:
-      globalcors:
-        add-to-simple-url-handler-mapping: true
-        cors-configurations:
-          '[/**]':
-            allowedOrigins: "http://localhost:4200"
-            allowedMethods: "*"
-            allowedHeaders: "*"
-            exposedHeaders: "Authorization"
-            allowCredentials: true
 
 server:
   port: 1111
@@ -33,9 +21,33 @@ feign:
         connectTimeout: 5000
         readTimeout: 5000
 
-# Gateway authentication settings
+# Gateway JWT configuration
 gateway:
-  auth:
-    token:
-      ttl-seconds: 86400  # 1 day
+  jwt:
+    # Secret key loaded from environment variable JWT_SECRET
+    # If not set, defaults to a dev key (ONLY FOR DEV)
+    secret-key: ${JWT_SECRET:dev-secret-key-change-this-in-prod-min-256-bits-32-bytes}
+    ttl-seconds: 86400 # 24 hours
+    issuer: gateway-server
 
+# Resilience4j Circuit Breaker configuration
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        permittedNumberOfCallsInHalfOpenState: 3
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+    instances:
+      userService:
+        baseConfig: default
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 5s
+    instances:
+      userService:
+        baseConfig: default

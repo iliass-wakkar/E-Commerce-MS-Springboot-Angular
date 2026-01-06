@@ -16,5 +16,7 @@ public class TokenInfo {
     private String email;
     private String role; // CLIENT or ADMIN
     private Instant createdAt;
+    @Builder.Default
+    private boolean blacklisted = false; // Flag for logout/revocation
 }
 

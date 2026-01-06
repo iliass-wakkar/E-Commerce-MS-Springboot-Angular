@@ -14,6 +14,7 @@ public interface UserService {
     UserResponseDTO getUserById(Long id);
     Optional<User> getUserByEmail(String email);
     UserResponseDTO updateUser(Long id, UserUpdateDTO updateDTO);
+    UserResponseDTO updateUserRole(Long id, com.Client.model.Role role);
     UserResponseDTO updateUserByEmail(String email, UserUpdateDTO updateDTO);
     void deleteUser(Long id);
     void deleteUserByEmail(String email);

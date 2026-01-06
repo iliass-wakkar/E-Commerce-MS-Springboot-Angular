@@ -79,6 +79,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponseDTO updateUserRole(Long id, Role role) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+        
+        user.setRole(role);
+        User updatedUser = userRepository.save(user);
+        return convertToResponseDTO(updatedUser);
+    }
+
+    @Override
     public UserResponseDTO updateUserByEmail(String email, UserUpdateDTO updateDTO) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));

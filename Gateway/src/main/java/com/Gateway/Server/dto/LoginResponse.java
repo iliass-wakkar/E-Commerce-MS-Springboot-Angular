@@ -14,5 +14,6 @@ public class LoginResponse {
     private Long userId;
     private String email;
     private String role;
+    private Long expiresIn; // Token expiration time in seconds
 }
 

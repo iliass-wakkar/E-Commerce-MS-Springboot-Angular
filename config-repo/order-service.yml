@@ -1,0 +1,37 @@
+# In config-repo/order-service.yml
+
+server:
+  port: 8082
+
+spring:
+  datasource:
+    # CRITICAL: Separate database for Orders
+    url: jdbc:postgresql://localhost:5432/order_db
+    username: postgres
+    password: mysecretpassword
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+# ==============================================================
+# RESILIENCE4J CONFIGURATION (Mandatory for Circuit Breaker)
+# ==============================================================
+resilience4j:
+  circuitbreaker:
+    instances:
+      # Matches the name used in @CircuitBreaker(name = "productService")
+      productService:
+        registerHealthIndicator: true
+        slidingWindowSize: 5         # Watch the last 5 calls
+        failureRateThreshold: 50     # Open circuit if 50% fail
+        waitDurationInOpenState: 5s  # Wait 5s before trying again
+        permittedNumberOfCallsInHalfOpenState: 3
+
+# CRITICAL: Enable Circuit Breaker support for Feign
+feign:
+  circuitbreaker:
+    enabled: true

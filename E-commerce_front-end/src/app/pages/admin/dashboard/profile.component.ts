@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
-import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-admin-profile',
@@ -35,7 +34,6 @@ export class AdminProfileComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private userService: UserService,
     private fb: FormBuilder
   ) {
     this.editForm = this.fb.group({
@@ -96,20 +94,17 @@ export class AdminProfileComponent implements OnInit {
     if (this.editForm.invalid) return;
 
     const updatedData = this.editForm.value;
-    // Use UserService to update the user. We need the user ID.
-    if (this.user && this.user.id) {
-      this.userService.updateUser(Number(this.user.id), updatedData).subscribe({
-        next: (response: any) => {
-          this.user = response;
-          this.isEditModalOpen = false;
-          alert('Profile updated successfully!');
-        },
-        error: (err: any) => {
-          console.error('Error updating profile:', err);
-          alert('Failed to update profile');
-        }
-      });
-    }
+    this.authService.updateProfile(updatedData).subscribe({
+      next: (response: any) => {
+        this.user = response;
+        this.isEditModalOpen = false;
+        alert('Profile updated successfully!');
+      },
+      error: (err: any) => {
+        console.error('Error updating profile:', err);
+        alert('Failed to update profile');
+      }
+    });
   }
 
   openDeleteConfirm(): void {
@@ -121,20 +116,18 @@ export class AdminProfileComponent implements OnInit {
   }
 
   confirmDelete(): void {
-    if (this.user && this.user.id) {
-      this.userService.deleteUser(Number(this.user.id)).subscribe({
-        next: () => {
-          alert('Account deleted successfully');
-          // Logout and redirect
-          this.authService.logout();
-        },
-        error: (err: any) => {
-          console.error('Error deleting profile:', err);
-          alert('Failed to delete account');
-          this.isDeleteConfirmOpen = false;
-        }
-      });
-    }
+    this.authService.deleteProfile().subscribe({
+      next: () => {
+        alert('Account deleted successfully');
+        // Logout and redirect
+        this.authService.logout();
+      },
+      error: (err: any) => {
+        console.error('Error deleting profile:', err);
+        alert('Failed to delete account');
+        this.isDeleteConfirmOpen = false;
+      }
+    });
   }
 }
 

@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  // Microservice direct URL (dev) - connects directly to ms-client on port 1111
+  // Gateway URL
   apiUrl: 'http://localhost:1111'
 };
